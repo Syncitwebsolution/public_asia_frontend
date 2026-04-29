@@ -82,7 +82,7 @@ const Navbar = () => {
   return (
     <>
       <div className="sticky top-0 z-[100] bg-white/95 backdrop-blur-lg border-b border-gray-100 shadow-sm w-full">
-        <div className="max-w-7xl mx-auto px-4 h-14 sm:h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 h-16 sm:h-20 flex items-center justify-between">
 
           {/* Left: Hamburger + Logo */}
           <div className="flex items-center sm:gap-2">
@@ -98,7 +98,7 @@ const Navbar = () => {
               <img
                 src={logoImg}
                 alt="Public Asia Logo"
-                style={{ height: '48px', width: 'auto', maxHeight: '48px' }}
+                style={{ height: '70px', width: 'auto', maxWidth: '200px' }}
                 className="object-contain transition-transform duration-300 group-hover:scale-[1.02]"
               />
             </NavLink>
