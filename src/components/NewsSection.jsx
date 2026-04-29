@@ -169,16 +169,16 @@ const NewsSection = () => {
 
       {/* ── 1. TRENDING TICKER ── */}
       {trending.length > 0 && (
-        <div className="flex items-center bg-white border border-gray-200 rounded overflow-hidden shadow-sm mx-1 md:mx-0">
-          <div className="bg-red-600 text-white px-3 md:px-4 py-2 md:py-2.5 font-bold text-[10px] md:text-sm flex items-center gap-1.5 shrink-0 uppercase tracking-tighter md:tracking-normal">
-            <TrendingUp size={14} className="md:w-4 md:h-4" /> ट्रेंडिंग
+        <div className="flex items-center bg-white border border-gray-200 rounded overflow-hidden">
+          <div className="bg-red-600 text-white px-4 py-2.5 font-bold text-sm flex items-center gap-1.5 shrink-0">
+            <TrendingUp size={16} /> ट्रेंडिंग
           </div>
-          <div className="relative h-6 overflow-hidden flex-1 px-3 md:px-4">
+          <div className="relative h-6 overflow-hidden flex-1 px-4">
             <div className="absolute transition-transform duration-500 w-full"
               style={{ transform: `translateY(-${current * 24}px)` }}>
               {trending.map((item, i) => (
                 <div key={item._id || i}
-                  className="h-6 text-sm md:text-base text-gray-800 font-medium whitespace-nowrap truncate cursor-pointer hover:text-red-600 flex items-center"
+                  className="h-6 text-base text-gray-800 font-medium whitespace-nowrap truncate cursor-pointer hover:text-red-600"
                   onClick={() => navigate(`/news/${item.slug}`)}>
                   {item.title}
                 </div>
@@ -190,50 +190,48 @@ const NewsSection = () => {
 
       {/* ── 2. HERO VIDEO ── */}
       {heroVideo && (
-        <div className="bg-white border border-gray-200 rounded overflow-hidden shadow-sm mx-1 md:mx-0">
+        <div className="bg-white border border-gray-200 rounded overflow-hidden">
           <div className="aspect-video bg-black">
             <iframe className="w-full h-full" src={getEmbedUrl(heroVideo.videoUrl)}
               title={heroVideo.title}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen />
           </div>
-          <div className="p-3 md:p-4 border-t border-gray-100">
+          <div className="p-4 border-t border-gray-100">
             {heroVideo.category?.name && (
-              <span className="text-[10px] md:text-sm font-bold text-red-600 uppercase">{heroVideo.category.name}</span>
+              <span className="text-sm font-bold text-red-600 uppercase">{heroVideo.category.name}</span>
             )}
-            <h2 className="font-bold text-lg md:text-xl text-gray-900 mt-1 leading-snug line-clamp-2">{heroVideo.title}</h2>
+            <h2 className="font-bold text-xl text-gray-900 mt-1 leading-snug">{heroVideo.title}</h2>
           </div>
         </div>
       )}
 
       {/* ── 3. FEATURED ARTICLE ── */}
       {heroArticle && (
-        <div className="bg-white border border-gray-200 rounded overflow-hidden cursor-pointer hover:shadow-lg transition mx-1 md:mx-0 group"
+        <div className="bg-white border border-gray-200 rounded overflow-hidden cursor-pointer hover:shadow transition"
           onClick={() => navigate(`/news/${heroArticle.slug}`, { state: heroArticle })}>
           {heroArticle.thumbnail ? (
             <div className="relative">
               <img src={heroArticle.thumbnail} alt={heroArticle.title}
-                className="w-full aspect-[16/10] md:aspect-[2/1] object-cover group-hover:scale-[1.01] transition-transform duration-500" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
+                className="w-full aspect-[2/1] object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-5">
                 {heroArticle.category?.name && (
-                  <span className="bg-red-600 text-white text-[10px] md:text-xs font-bold uppercase px-2 py-0.5 md:px-2.5 md:py-1 rounded shadow-sm">
-                    {heroArticle.category.name}
-                  </span>
+                  <span className="bg-red-600 text-white text-xs font-bold uppercase px-2.5 py-1 rounded">{heroArticle.category.name}</span>
                 )}
-                <h1 className="text-white font-bold text-lg md:text-3xl leading-tight mt-2 line-clamp-3">{heroArticle.title}</h1>
+                <h1 className="text-white font-bold text-2xl leading-tight mt-2 line-clamp-2">{heroArticle.title}</h1>
               </div>
             </div>
           ) : (
             <div className="p-5">
-              <h1 className="font-bold text-xl md:text-3xl text-gray-900 mt-1">{heroArticle.title}</h1>
+              <h1 className="font-bold text-2xl text-gray-900 mt-1">{heroArticle.title}</h1>
             </div>
           )}
         </div>
       )}
 
       {/* ── AD 1 ── */}
-      <div className="bg-gray-50 border border-gray-200 rounded text-center flex flex-col items-center justify-center overflow-hidden mx-1 md:mx-0">
+      <div className="bg-gray-50 border border-gray-200 rounded text-center flex flex-col items-center justify-center overflow-hidden">
         <span className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1 mt-2">विज्ञापन</span>
         {ad ? (
           ad.type === 'script' ? (
@@ -244,31 +242,31 @@ const NewsSection = () => {
             </a>
           )
         ) : (
-          <div className="w-full h-20 md:h-24 flex items-center justify-center">
-            <span className="text-gray-400 text-xs md:text-sm font-medium italic">Space for advertisement</span>
+          <div className="w-full h-24 flex items-center justify-center">
+            <span className="text-gray-400 text-sm font-medium">Ad Space</span>
           </div>
         )}
       </div>
 
       {/* ── 4. TOP VIDEO GRID ── */}
       {restVideos.length > 0 && (
-        <div className="px-1 md:px-0">
+        <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg md:text-xl font-bold text-gray-900 border-l-4 border-red-600 pl-3 flex items-center gap-2">
-              <Play size={18} className="text-red-600" fill="currentColor" /> वीडियो समाचार
+            <h2 className="text-xl font-bold text-gray-900 border-l-4 border-red-600 pl-3 flex items-center gap-2">
+              <Play size={18} className="text-red-600" fill="currentColor" /> वीडियो
             </h2>
             <button onClick={() => navigate('/videos')}
-              className="text-xs md:text-sm text-red-600 font-bold hover:underline flex items-center">
-              और देखें <ChevronRight size={14} />
+              className="text-sm text-red-600 font-bold hover:underline flex items-center">
+              और देखें <ChevronRight size={16} />
             </button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {restVideos.map(video => {
               const ytId = getYtId(video.videoUrl);
               const thumb = video.thumbnail || (ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null);
               return (
                 <div key={video._id}
-                  className="bg-white border border-gray-200 rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition group"
+                  className="bg-white border border-gray-200 rounded overflow-hidden cursor-pointer hover:shadow transition group"
                   onClick={() => window.open(video.videoUrl, '_blank')}>
                   <div className="relative aspect-video bg-gray-200 overflow-hidden">
                     {thumb ? (
@@ -278,14 +276,14 @@ const NewsSection = () => {
                         <Play size={32} className="text-white" fill="white" />
                       </div>
                     )}
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/0 transition-colors">
-                      <div className="w-10 h-10 md:w-11 md:h-11 bg-red-600/90 rounded-full flex items-center justify-center group-hover:bg-red-600 group-hover:scale-110 transition-all shadow-lg">
-                        <Play size={18} md:size={20} className="text-white ml-0.5" fill="white" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-11 h-11 bg-red-600/90 rounded-full flex items-center justify-center group-hover:bg-red-600 group-hover:scale-110 transition-all shadow-lg">
+                        <Play size={20} className="text-white ml-0.5" fill="white" />
                       </div>
                     </div>
                   </div>
-                  <div className="p-3">
-                    <h4 className="font-bold text-sm text-gray-900 line-clamp-2 leading-snug group-hover:text-red-600 transition-colors">{video.title}</h4>
+                  <div className="p-2.5">
+                    <h4 className="font-bold text-sm text-gray-900 line-clamp-2 leading-snug">{video.title}</h4>
                   </div>
                 </div>
               );
@@ -296,11 +294,11 @@ const NewsSection = () => {
 
       {/* ── 5. INFINITE SCROLL ARTICLES (WITH NATIVE VIDEO UI) ── */}
       {restArticles.length > 0 && (
-        <div className="px-1 md:px-0">
-          <h2 className="text-lg md:text-xl font-bold text-gray-900 border-l-4 border-orange-500 pl-3 mb-4">
-            {categoryName ? decodeURIComponent(categoryName) : 'ताज़ा समाचार'}
+        <div>
+          <h2 className="text-xl font-bold text-gray-900 border-l-4 border-orange-500 pl-3 mb-4">
+            {categoryName ? decodeURIComponent(categoryName) : 'ताज़ा खबरें'}
           </h2>
-          <div className="divide-y divide-gray-100 bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+          <div className="divide-y divide-gray-100 bg-white border border-gray-200 rounded overflow-hidden">
 
             {restArticles.map((item, index) => {
               const isLastElement = restArticles.length === index + 1;
@@ -314,25 +312,24 @@ const NewsSection = () => {
                   <div
                     ref={isLastElement ? lastArticleElementRef : null}
                     onClick={() => navigate(`/news/${item.slug}`, { state: item })}
-                    className="flex gap-3 md:gap-4 p-3 md:p-4 hover:bg-gray-50 transition cursor-pointer group"
+                    className="flex gap-4 p-4 hover:bg-gray-50 transition cursor-pointer"
                   >
                     {item.thumbnail && (
-                      <div className="w-28 h-20 md:w-44 md:h-28 shrink-0 overflow-hidden rounded-lg">
-                        <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" />
-                      </div>
+                      <img src={item.thumbnail} alt={item.title} className="w-36 h-24 md:w-44 md:h-28 object-cover rounded flex-shrink-0" loading="lazy" decoding="async" />
                     )}
                     <div className="flex flex-col justify-between flex-1 min-w-0">
                       <div>
                         {item.category?.name && (
-                          <span className="text-[10px] md:text-xs font-bold text-red-600 uppercase">{item.category.name}</span>
+                          <span className="text-xs font-bold text-red-600 uppercase">{item.category.name}</span>
                         )}
-                        <h3 className="font-bold text-sm md:text-lg text-gray-900 line-clamp-2 leading-snug mt-1 group-hover:text-red-600 transition-colors">{item.title}</h3>
-                        <p className="text-xs md:text-sm text-gray-500 mt-1.5 line-clamp-2 hidden sm:block">{strip(item.content)}</p>
+                        <h3 className="font-bold text-lg text-gray-900 line-clamp-2 leading-snug mt-1">{item.title}</h3>
+                        <p className="text-sm text-gray-500 mt-1 line-clamp-2 hidden md:block">{strip(item.content)}</p>
                       </div>
-                      <div className="flex items-center gap-2 text-[10px] md:text-xs text-gray-400 mt-2">
-                        <Clock size={10} md:size={12} /><span>{timeAgo(item.createdAt)}</span>
+                      <div className="flex items-center gap-2 text-xs text-gray-400 mt-2">
+                        <Clock size={12} /><span>{timeAgo(item.createdAt)}</span>
                       </div>
                     </div>
+                    <ChevronRight size={20} className="text-gray-300 self-center hidden md:block" />
                   </div>
 
                   {/* -- INJECTED VIDEO ROW (ARTICLE FORMAT) -- */}
@@ -342,19 +339,19 @@ const NewsSection = () => {
 
                     return (
                       <div
-                        className="flex gap-3 md:gap-4 p-3 md:p-4 bg-red-50/50 hover:bg-red-50 transition cursor-pointer group"
+                        className="flex gap-4 p-4 bg-red-50 hover:bg-red-100 transition cursor-pointer"
                         onClick={() => window.open(videoToRender.videoUrl, '_blank')}
                       >
                         {/* 🚀 IMAGE WITH PLAY BUTTON OVERLAY */}
-                        <div className="relative w-28 h-20 md:w-44 md:h-28 shrink-0 overflow-hidden rounded-lg">
+                        <div className="relative w-36 h-24 md:w-44 md:h-28 flex-shrink-0">
                           {thumb ? (
-                            <img src={thumb} alt={videoToRender.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
+                            <img src={thumb} alt={videoToRender.title} className="w-full h-full object-cover rounded" loading="lazy" decoding="async" />
                           ) : (
-                            <div className="w-full h-full bg-gray-800" />
+                            <div className="w-full h-full bg-gray-800 rounded" />
                           )}
-                          <div className="absolute inset-0 bg-black/30 flex items-center justify-center transition group-hover:bg-black/20">
-                            <div className="w-8 h-8 md:w-10 md:h-10 bg-red-600 rounded-full flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                              <Play size={16} md:size={20} fill="white" className="text-white ml-0.5" />
+                          <div className="absolute inset-0 bg-black/20 flex items-center justify-center rounded transition hover:bg-black/10">
+                            <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center shadow-lg">
+                              <Play size={20} fill="white" className="text-white ml-1" />
                             </div>
                           </div>
                         </div>
@@ -362,16 +359,17 @@ const NewsSection = () => {
                         {/* TEXT CONTENT EXTACTLY LIKE ARTICLE */}
                         <div className="flex flex-col justify-between flex-1 min-w-0">
                           <div>
-                            <span className="text-[10px] md:text-xs font-bold text-red-600 uppercase flex items-center gap-1">
-                              <Play size={10} md:size={12} fill="currentColor" /> सुझाई गई वीडियो
+                            <span className="text-xs font-bold text-red-600 uppercase flex items-center gap-1">
+                              <Play size={12} fill="currentColor" /> सुझाई गई वीडियो
                             </span>
-                            <h3 className="font-bold text-sm md:text-lg text-gray-900 line-clamp-2 leading-snug mt-1 group-hover:text-red-600 transition-colors">{videoToRender.title}</h3>
-                            <p className="text-xs md:text-sm text-gray-500 mt-1.5 line-clamp-2 hidden sm:block">{videoToRender.description || 'वीडियो देखने के लिए क्लिक करें'}</p>
+                            <h3 className="font-bold text-lg text-gray-900 line-clamp-2 leading-snug mt-1">{videoToRender.title}</h3>
+                            <p className="text-sm text-gray-500 mt-1 line-clamp-2 hidden md:block">{videoToRender.description || 'वीडियो देखने के लिए क्लिक करें'}</p>
                           </div>
-                          <div className="flex items-center gap-2 text-[10px] md:text-xs text-gray-500 mt-2">
-                            <Clock size={10} md:size={12} /><span>{timeAgo(videoToRender.createdAt)}</span>
+                          <div className="flex items-center gap-2 text-xs text-gray-500 mt-2">
+                            <Clock size={12} /><span>{timeAgo(videoToRender.createdAt)}</span>
                           </div>
                         </div>
+                        <ChevronRight size={20} className="text-red-300 self-center hidden md:block" />
                       </div>
                     );
                   })()}
@@ -389,8 +387,8 @@ const NewsSection = () => {
 
           {/* END OF LIST MESSAGE */}
           {!hasMore && restArticles.length > 0 && (
-            <div className="text-center py-10 text-gray-500 font-bold bg-gray-50 rounded-b-xl border border-t-0 border-gray-200 mx-1 md:mx-0">
-               आप पूरी तरह से अपडेट हैं! 📰
+            <div className="text-center py-8 text-gray-500 font-medium bg-gray-50 rounded-b-lg border border-t-0 border-gray-200">
+              आपने सारी खबरें पढ़ ली हैं! 📰
             </div>
           )}
         </div>

@@ -138,18 +138,18 @@ const EPaperPage = () => {
   const currentPage = selectedEdition?.pages[currentPageIndex];
 
   return (
-    <div className="bg-[#f0f2f5] min-h-screen flex flex-col font-sans overflow-x-hidden">
+    <div className="bg-[#f0f2f5] min-h-screen flex flex-col font-sans">
       {/* --- High Contrast Professional Header --- */}
-      <header className="bg-white border-b border-gray-100 z-50 sticky top-16 sm:top-20 overflow-x-hidden">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 h-16 sm:h-20 flex items-center justify-between gap-2">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-md">
+        <div className="max-w-screen-2xl mx-auto px-4 h-16 flex items-center justify-between">
           
           <div className="flex items-center gap-2 sm:gap-6">
             <div className="flex items-center shrink-0">
-                <img
+               <img
                   src={logoImg}
                   alt="Public Asia"
-                  style={{ height: '44px', width: 'auto' }}
-                  className="object-contain sm:h-[60px]"
+                  style={{ height: '60px', width: 'auto' }}
+                  className="object-contain"
                 />
               <div className="h-6 w-px bg-gray-300 mx-4 hidden sm:block"></div>
               <span className="bg-red-600 text-white px-3 py-1 rounded-lg text-[10px] sm:text-xs font-black tracking-widest uppercase shadow-lg shadow-red-200">e-Paper</span>
@@ -197,8 +197,8 @@ const EPaperPage = () => {
       </header>
 
       {/* --- Edition Context & Quick Info --- */}
-      <div className="bg-gray-900 text-white py-3 shadow-inner overflow-hidden">
-        <div className="max-w-6xl mx-auto px-4 flex items-center justify-between gap-4">
+      <div className="bg-gray-900 text-white py-3 shadow-inner">
+        <div className="max-w-6xl mx-auto px-4 flex items-center justify-between">
           <div className="flex items-center gap-3 overflow-hidden">
              <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse shrink-0"></div>
              <p className="text-[11px] sm:text-sm font-black truncate uppercase tracking-widest text-gray-100">

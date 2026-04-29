@@ -53,9 +53,7 @@ const NewsCatagory = ({ horizontal = false }) => {
       `}</style>
 
       <ul className={`hide-scroll flex ${horizontal
-          // 🚀 THE HORIZONTAL FIX: overflow-x-auto, snap-x for smoothness
-          ? "flex-row overflow-x-auto whitespace-nowrap gap-3 px-3 snap-x scroll-smooth"
-          // 🚀 Vertical: No max-height or overflow so parent sticky JS can control scroll
+          ? "flex-row overflow-x-auto whitespace-nowrap gap-2 px-2 snap-x scroll-smooth"
           : "flex-col"
         }`}>
 
@@ -69,14 +67,14 @@ const NewsCatagory = ({ horizontal = false }) => {
             return (
               <li key={item._id || index} className="shrink-0 snap-start">
                 <Link to={linkPath}
-                  className={`flex items-center gap-2 text-sm font-bold py-2 px-3 rounded-xl transition-all duration-300 ${isActive 
-                      ? 'bg-red-600 text-white shadow-lg shadow-red-200 border-red-600 scale-105' 
+                  className={`flex items-center gap-2 text-sm font-medium py-1.5 px-3 rounded-full transition-colors ${isActive 
+                      ? 'bg-red-600 text-white shadow-md' 
                       : 'bg-white text-gray-700 hover:text-red-600 hover:bg-red-50 border border-gray-100'
                     }`}>
-                  <div className={`w-6 h-6 rounded-lg flex items-center justify-center transition-colors ${isActive ? 'bg-white/20' : config.bg}`}>
+                  <div className={`w-5 h-5 rounded-full flex items-center justify-center transition-colors ${isActive ? 'bg-white/20' : config.bg}`}>
                     <Icon size={12} className={isActive ? 'text-white' : config.color} />
                   </div>
-                  <span className="whitespace-nowrap uppercase tracking-tight">{item.name}</span>
+                  <span className="whitespace-nowrap">{item.name}</span>
                 </Link>
               </li>
             );
@@ -86,12 +84,12 @@ const NewsCatagory = ({ horizontal = false }) => {
             // Desktop Vertical List Item
             <li key={item._id || index}>
               <Link to={linkPath}
-                className={`flex items-center gap-3 px-4 py-3 transition-colors border-b border-gray-100 last:border-0 ${isActive ? 'bg-red-50 text-red-600 font-bold border-l-4 border-l-red-600' : 'hover:bg-gray-50 text-gray-800 border-l-4 border-l-transparent'
+                className={`flex items-center gap-3 px-4 py-2.5 transition-colors border-b border-gray-100 last:border-0 ${isActive ? 'bg-red-50 text-red-600 font-bold border-l-4 border-l-red-600' : 'hover:bg-gray-50 text-gray-800 border-l-4 border-l-transparent'
                   }`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${config.bg} shrink-0`}>
-                  <Icon size={16} className={config.color} />
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center ${config.bg} shrink-0`}>
+                  <Icon size={14} className={config.color} />
                 </div>
-                <span className="font-semibold text-base">{item.name}</span>
+                <span className="font-semibold text-sm">{item.name}</span>
               </Link>
             </li>
           );

@@ -81,8 +81,8 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="sticky top-0 z-[100] bg-white/95 backdrop-blur-lg border-b border-gray-100 shadow-sm w-full overflow-x-hidden">
-        <div className="max-w-7xl mx-auto px-4 h-16 sm:h-18 flex items-center justify-between gap-2">
+      <div className="sticky top-0 z-[100] bg-white/95 backdrop-blur-lg border-b border-gray-100 shadow-sm w-full">
+        <div className="max-w-7xl mx-auto px-4 h-14 sm:h-16 flex items-center justify-between">
 
           {/* Left: Hamburger + Logo */}
           <div className="flex items-center sm:gap-2">
@@ -95,12 +95,12 @@ const Navbar = () => {
             </button>
 
             <NavLink to="/" onClick={handleScrollToTop} className="group cursor-pointer flex items-center shrink-0">
-                <img
-                  src={logoImg}
-                  alt="Public Asia Logo"
-                  style={{ height: '52px', width: 'auto' }}
-                  className="object-contain transition-transform duration-300 group-hover:scale-[1.05] min-w-[120px] sm:min-w-[150px]"
-                />
+              <img
+                src={logoImg}
+                alt="Public Asia Logo"
+                style={{ height: '48px', width: 'auto', maxHeight: '48px' }}
+                className="object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+              />
             </NavLink>
           </div>
 
@@ -153,7 +153,7 @@ const Navbar = () => {
             </NavLink>
 
             <NavLink to="/webstory" className={({ isActive }) =>
-              `hidden sm:flex items-center gap-1 sm:gap-2 hover:text-red-600 whitespace-nowrap py-1 transition-colors text-[10px] sm:text-base ${isActive ? "text-red-600 border-b-2  border-red-600" : ""}`
+              `flex items-center gap-1 sm:gap-2 hover:text-red-600 whitespace-nowrap py-1 transition-colors text-[10px] sm:text-base ${isActive ? "text-red-600 border-b-2  border-red-600" : ""}`
             }>
               <Layers className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
               <span className="hidden sm:inline">वेबस्टोरी</span>
@@ -233,7 +233,7 @@ const Navbar = () => {
           >
             {/* --- Header --- */}
             <div className="shrink-0 flex items-center justify-between px-5 py-3 border-b border-gray-100">
-              <img src={logoImg} alt="Logo" style={{ height: '52px', width: 'auto' }} className="object-contain" />
+              <img src={logoImg} alt="Logo" style={{ height: '36px' }} className="w-auto object-contain" />
               <button
                 onClick={() => setMenuOpen(false)}
                 className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all active:scale-90"
