@@ -29,8 +29,8 @@ const NewsSection = () => {
       const rect = e.currentTarget.getBoundingClientRect();
       // Calculate position (fixed)
       setMenuPos({ 
-        top: rect.bottom + window.scrollY + 8, 
-        left: rect.right + window.scrollX - 140 
+        top: rect.bottom + 8, 
+        left: rect.right - 140 
       });
       setActiveShareId(id);
     }
