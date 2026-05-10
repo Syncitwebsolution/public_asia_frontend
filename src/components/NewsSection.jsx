@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { TrendingUp, Clock, ChevronRight, Loader2, Play } from 'lucide-react';
+import { TrendingUp, Clock, ChevronRight, Loader2, Play, Share2, Check } from 'lucide-react';
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../assets/api";
 
@@ -17,6 +17,27 @@ const NewsSection = () => {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [current, setCurrent] = useState(0);
+  const [copiedId, setCopiedId] = useState(null);
+
+  const handleShare = async (e, item) => {
+    e.stopPropagation();
+    const url = `${window.location.origin}/news/${item.slug}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: item.title,
+          text: item.title,
+          url: url,
+        });
+      } catch (err) {
+        console.log('Error sharing', err);
+      }
+    } else {
+      navigator.clipboard.writeText(url);
+      setCopiedId(item._id);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
+  };
 
   // ── 1. RESET STATE ON CATEGORY CHANGE + SCROLL TO TOP ──
   useEffect(() => {
@@ -219,7 +240,16 @@ const NewsSection = () => {
                 {heroArticle.category?.name && (
                   <span className="bg-red-600 text-white text-xs font-bold uppercase px-2.5 py-1 rounded">{heroArticle.category.name}</span>
                 )}
-                <h1 className="text-white font-bold text-2xl leading-tight mt-2 line-clamp-2">{heroArticle.title}</h1>
+                <div className="flex items-end justify-between gap-4 mt-2">
+                  <h1 className="text-white font-bold text-2xl leading-tight line-clamp-2">{heroArticle.title}</h1>
+                  <button 
+                    onClick={(e) => handleShare(e, heroArticle)}
+                    className="p-2 bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full text-white transition-colors shrink-0"
+                    title="Share Article"
+                  >
+                    {copiedId === heroArticle._id ? <Check size={20} className="text-green-400" /> : <Share2 size={20} />}
+                  </button>
+                </div>
               </div>
             </div>
           ) : (
@@ -325,8 +355,17 @@ const NewsSection = () => {
                         <h3 className="font-bold text-lg text-gray-900 line-clamp-2 leading-snug mt-1">{item.title}</h3>
                         <p className="text-sm text-gray-500 mt-1 line-clamp-2 hidden md:block">{strip(item.content)}</p>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-gray-400 mt-2">
-                        <Clock size={12} /><span>{timeAgo(item.createdAt)}</span>
+                      <div className="flex items-center justify-between mt-2">
+                        <div className="flex items-center gap-2 text-xs text-gray-400">
+                          <Clock size={12} /><span>{timeAgo(item.createdAt)}</span>
+                        </div>
+                        <button 
+                          onClick={(e) => handleShare(e, item)}
+                          className="p-1.5 rounded-full hover:bg-red-50 hover:text-red-600 text-gray-400 transition-colors"
+                          title="Share Article"
+                        >
+                          {copiedId === item._id ? <Check size={16} className="text-green-600" /> : <Share2 size={16} />}
+                        </button>
                       </div>
                     </div>
                     <ChevronRight size={20} className="text-gray-300 self-center hidden md:block" />
