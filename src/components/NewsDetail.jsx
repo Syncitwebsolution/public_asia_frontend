@@ -25,11 +25,28 @@ const NewsDetail = () => {
     const handleNativeShare = async () => {
         if (navigator.share) {
             try {
-                await navigator.share({
+                const shareData = {
                     title: article?.title,
-                    text: article?.title,
+                    text: article?.description || article?.title,
                     url: currentUrl,
-                });
+                };
+
+                // Try to add image to share if available
+                if (article?.thumbnail && navigator.canShare) {
+                    try {
+                        const response = await fetch(article.thumbnail);
+                        const blob = await response.blob();
+                        const file = new File([blob], 'article-image.jpg', { type: 'image/jpeg' });
+                        
+                        if (navigator.canShare({ files: [file] })) {
+                            shareData.files = [file];
+                        }
+                    } catch (err) {
+                        console.log('Could not add image to share:', err);
+                    }
+                }
+
+                await navigator.share(shareData);
             } catch (err) {
                 console.log('Error sharing', err);
             }
@@ -132,6 +149,7 @@ const NewsDetail = () => {
 
     const isExternal = !article._id;
     const metaDescription = article.content ? article.content.replace(/<[^>]*>?/gm, '').substring(0, 155) + '...' : article.title;
+    const articleImage = article.thumbnail || article.image || article.urlToImage || 'https://via.placeholder.com/1200x630/dc2626/ffffff?text=Public+Asia';
 
     return (
         <div className="bg-gray-50 min-h-screen">
@@ -140,8 +158,15 @@ const NewsDetail = () => {
                 <meta name="description" content={metaDescription} />
                 <meta property="og:title" content={article.title} />
                 <meta property="og:description" content={metaDescription} />
-                {article.thumbnail && <meta property="og:image" content={article.thumbnail} />}
+                <meta property="og:image" content={articleImage} />
+                <meta property="og:image:width" content="1200" />
+                <meta property="og:image:height" content="630" />
                 <meta property="og:type" content="article" />
+                <meta property="og:url" content={currentUrl} />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={article.title} />
+                <meta name="twitter:description" content={metaDescription} />
+                <meta name="twitter:image" content={articleImage} />
             </Helmet>
             <div className="max-w-7xl mx-auto px-2 md:px-4 py-4">
                 <div className="flex flex-col lg:flex-row gap-6">

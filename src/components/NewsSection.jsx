@@ -50,12 +50,15 @@ const NewsSection = () => {
     e.stopPropagation();
     const url = `${window.location.origin}/news/${item.slug}`;
     const title = item.title;
+    const description = item.description || item.title;
+    const image = item.thumbnail || item.image || item.urlToImage;
 
     switch (platform) {
       case 'whatsapp':
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(title + " " + url)}`, '_blank');
         break;
       case 'facebook':
+        // Facebook will automatically fetch og:image from the page
         window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
         break;
       case 'twitter':
@@ -72,7 +75,28 @@ const NewsSection = () => {
       case 'native':
         if (navigator.share) {
           try {
-            await navigator.share({ title, text: title, url });
+            const shareData = {
+              title,
+              text: description,
+              url
+            };
+
+            // Try to add image to native share if available
+            if (image && navigator.canShare) {
+              try {
+                const response = await fetch(image);
+                const blob = await response.blob();
+                const file = new File([blob], 'article-image.jpg', { type: 'image/jpeg' });
+                
+                if (navigator.canShare({ files: [file] })) {
+                  shareData.files = [file];
+                }
+              } catch (err) {
+                console.log('Could not add image to share:', err);
+              }
+            }
+
+            await navigator.share(shareData);
           } catch (err) {
             console.log('Error sharing', err);
           }

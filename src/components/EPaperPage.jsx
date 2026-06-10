@@ -107,12 +107,35 @@ const EPaperPage = () => {
     }
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     if (navigator.share) {
-      navigator.share({
-        title: 'Public Asia e-Paper',
-        url: window.location.href,
-      }).catch(console.error);
+      try {
+        const currentPage = selectedEdition?.pages[currentPageIndex];
+        const shareData = {
+          title: `Public Asia e-Paper - ${selectedEdition?.title || 'Edition'}`,
+          text: `Check out this e-Paper page from ${selectedEdition?.date || 'Public Asia'}`,
+          url: window.location.href,
+        };
+
+        // Try to add current page image if available
+        if (currentPage?.imageUrl && navigator.canShare) {
+          try {
+            const response = await fetch(currentPage.imageUrl);
+            const blob = await response.blob();
+            const file = new File([blob], 'epaper-page.jpg', { type: 'image/jpeg' });
+            
+            if (navigator.canShare({ files: [file] })) {
+              shareData.files = [file];
+            }
+          } catch (err) {
+            console.log('Could not add image to share:', err);
+          }
+        }
+
+        await navigator.share(shareData);
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
