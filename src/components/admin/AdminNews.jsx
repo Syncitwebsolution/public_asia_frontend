@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../../assets/api";
 import { Plus, Edit2, Trash2, Image as ImageIcon, X, Search, FileText, UploadCloud, CheckCircle2, Settings2 } from "lucide-react";
+import { RichTextEditor } from "./RichTextEditor";
 
 const AdminNews = () => {
   const [categories, setCategories] = useState([]);
@@ -191,14 +192,10 @@ const AdminNews = () => {
                 
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Content *</label>
-                  <textarea
-                    name="content"
-                    rows="16"
+                  <RichTextEditor
                     value={formData.content}
-                    onChange={handleChange}
+                    onChange={(html) => setFormData(prev => ({ ...prev, content: html }))}
                     placeholder="Write your article content here..."
-                    className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all text-slate-800 resize-none font-medium text-sm leading-relaxed"
-                    required
                   />
                 </div>
               </div>
