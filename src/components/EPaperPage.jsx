@@ -11,7 +11,9 @@ import {
   AlertCircle,
   Share2,
   ArrowRight,
-  Printer
+  Printer,
+  FileCode,
+  ListFilter
 } from "lucide-react";
 import api from "../assets/api";
 import logoImg from '../assets/IMG_3084.JPG.jpeg';
@@ -69,7 +71,7 @@ const EPaperPage = () => {
   };
 
   const handleNextPage = useCallback(() => {
-    if (selectedEdition && currentPageIndex < selectedEdition.pages.length - 1) {
+    if (selectedEdition && selectedEdition.pages && currentPageIndex < selectedEdition.pages.length - 1) {
       setCurrentPageIndex((prev) => prev + 1);
       setZoomScale(1);
     }
@@ -82,8 +84,18 @@ const EPaperPage = () => {
     }
   }, [currentPageIndex]);
 
-  const handleZoomIn = () => setZoomScale((prev) => Math.min(prev + 0.2, 2.5));
-  const handleZoomOut = () => setZoomScale((prev) => Math.max(prev - 0.2, 0.5));
+  // Keyboard navigation support
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "ArrowRight") handleNextPage();
+      if (e.key === "ArrowLeft") handlePrevPage();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleNextPage, handlePrevPage]);
+
+  const handleZoomIn = () => setZoomScale((prev) => Math.min(prev + 0.25, 2.5));
+  const handleZoomOut = () => setZoomScale((prev) => Math.max(prev - 0.25, 0.6));
   const handleResetZoom = () => setZoomScale(1);
 
   const formatDate = (dateString) => {
@@ -97,7 +109,7 @@ const EPaperPage = () => {
   };
 
   const handleCalendarToggle = () => {
-    dateInputRef.current?.showPicker(); // Opens the native calendar picker
+    dateInputRef.current?.showPicker();
   };
 
   const onDateChange = (e) => {
@@ -110,32 +122,17 @@ const EPaperPage = () => {
   const handleShare = async () => {
     if (navigator.share) {
       try {
-        const currentPage = selectedEdition?.pages[currentPageIndex];
-        const shareData = {
+        await navigator.share({
           title: `Public Asia e-Paper - ${selectedEdition?.title || 'Edition'}`,
-          text: `Check out this e-Paper page from ${selectedEdition?.date || 'Public Asia'}`,
+          text: `Read Public Asia e-Paper (${formatDate(selectedEdition?.date)})`,
           url: window.location.href,
-        };
-
-        // Try to add current page image if available
-        if (currentPage?.imageUrl && navigator.canShare) {
-          try {
-            const response = await fetch(currentPage.imageUrl);
-            const blob = await response.blob();
-            const file = new File([blob], 'epaper-page.jpg', { type: 'image/jpeg' });
-            
-            if (navigator.canShare({ files: [file] })) {
-              shareData.files = [file];
-            }
-          } catch (err) {
-            console.log('Could not add image to share:', err);
-          }
-        }
-
-        await navigator.share(shareData);
+        });
       } catch (err) {
-        console.error(err);
+        console.error("Share failed", err);
       }
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      alert("ई-पेपर का लिंक कॉपी हो गया है!");
     }
   };
 
@@ -155,14 +152,14 @@ const EPaperPage = () => {
 
   const today = new Date().toISOString().split("T")[0];
   const oneMonthAgo = new Date();
-  oneMonthAgo.setMonth(new Date().getMonth() - 1);
+  oneMonthAgo.setMonth(new Date().getMonth() - 3);
   const minDate = oneMonthAgo.toISOString().split("T")[0];
 
-  const currentPage = selectedEdition?.pages[currentPageIndex];
+  const currentPage = selectedEdition?.pages?.[currentPageIndex];
 
   return (
-    <div className="bg-[#f0f2f5] min-h-screen flex flex-col font-sans">
-      {/* --- High Contrast Professional Header --- */}
+    <div className="bg-[#f0f2f5] min-h-screen flex flex-col font-sans select-none">
+      {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-md">
         <div className="max-w-screen-2xl mx-auto px-4 h-16 flex items-center justify-between">
           
@@ -171,14 +168,14 @@ const EPaperPage = () => {
                <img
                   src={logoImg}
                   alt="Public Asia"
-                  style={{ height: '60px', width: 'auto' }}
+                  style={{ height: '55px', width: 'auto' }}
                   className="object-contain"
                 />
               <div className="h-6 w-px bg-gray-300 mx-4 hidden sm:block"></div>
               <span className="bg-red-600 text-white px-3 py-1 rounded-lg text-[10px] sm:text-xs font-black tracking-widest uppercase shadow-lg shadow-red-200">e-Paper</span>
             </div>
 
-            {/* --- CALENDAR SELECTOR --- */}
+            {/* Calendar Selector */}
             <div className="relative group ml-1 sm:ml-4">
               <input 
                 type="date"
@@ -190,154 +187,197 @@ const EPaperPage = () => {
               />
               <button 
                 onClick={handleCalendarToggle}
-                className="flex items-center gap-2 bg-gray-50 text-gray-900 px-4 py-2.5 rounded-xl border border-gray-100 hover:bg-white hover:border-red-600 transition-all font-black text-[11px] sm:text-sm active:scale-95 shadow-sm"
+                className="flex items-center gap-2 bg-gray-50 text-gray-900 px-4 py-2.5 rounded-xl border border-gray-200 hover:bg-white hover:border-red-600 transition-all font-bold text-xs sm:text-sm active:scale-95 shadow-sm"
               >
                 <CalendarIcon size={16} className="text-red-600" />
-                <span className="hidden sm:inline">तिथि चुनें</span>
-                <span className="sm:hidden text-xs">Calendar</span>
+                <span className="hidden sm:inline">तिथि चुनें (Calendar)</span>
+                <span className="sm:hidden text-xs">तिथि</span>
               </button>
             </div>
+
+            {/* Edition Dropdown Selector */}
+            {editions.length > 1 && (
+              <div className="hidden md:flex items-center">
+                <select
+                  className="bg-gray-50 text-gray-800 text-xs font-bold py-2 px-3 rounded-xl border border-gray-200 outline-none focus:border-red-500"
+                  value={selectedEdition?.date ? new Date(selectedEdition.date).toISOString().split('T')[0] : ''}
+                  onChange={(e) => fetchEditionDetails(e.target.value)}
+                >
+                  {editions.map((ed) => (
+                    <option key={ed._id} value={new Date(ed.date).toISOString().split('T')[0]}>
+                      {ed.title} ({new Date(ed.date).toLocaleDateString()})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
+          {/* Action buttons */}
           <div className="flex items-center gap-1 sm:gap-3">
              <div className="hidden md:flex items-center bg-gray-100 rounded-2xl p-1 border border-gray-200 mr-2">
-                <button onClick={handleZoomOut} className="p-2 hover:bg-white rounded-xl transition text-gray-700 active:scale-90"><ZoomOut size={18} /></button>
+                <button onClick={handleZoomOut} className="p-2 hover:bg-white rounded-xl transition text-gray-700 active:scale-90" title="Zoom Out"><ZoomOut size={18} /></button>
                 <span className="text-xs font-black w-14 text-center text-red-600">{Math.round(zoomScale * 100)}%</span>
-                <button onClick={handleZoomIn} className="p-2 hover:bg-white rounded-xl transition text-gray-700 active:scale-90"><ZoomIn size={18} /></button>
+                <button onClick={handleZoomIn} className="p-2 hover:bg-white rounded-xl transition text-gray-700 active:scale-90" title="Zoom In"><ZoomIn size={18} /></button>
              </div>
              
-             <button onClick={handleShare} className="p-3 hover:bg-red-50 hover:text-red-600 rounded-xl transition text-gray-500 bg-gray-50 border border-gray-100" title="Share">
+             <button onClick={handleShare} className="p-3 hover:bg-red-50 hover:text-red-600 rounded-xl transition text-gray-600 bg-gray-50 border border-gray-200" title="Share Edition">
                <Share2 size={18} />
              </button>
-             <a href={currentPage?.imageUrl} target="_blank" rel="noreferrer" className="p-3 hover:bg-red-50 hover:text-red-600 rounded-xl transition text-gray-500 bg-gray-50 border border-gray-100" title="Download">
-               <Download size={18} />
-             </a>
-             <button onClick={handleResetZoom} className="p-3 hover:bg-red-50 hover:text-red-600 rounded-xl transition text-gray-500 bg-gray-50 border border-gray-100 hidden sm:block" title="Reset Viewer">
+
+             {currentPage?.imageUrl && (
+               <a href={currentPage.imageUrl} target="_blank" rel="noreferrer" download className="p-3 hover:bg-red-50 hover:text-red-600 rounded-xl transition text-gray-600 bg-gray-50 border border-gray-200" title="Download Page Image">
+                 <Download size={18} />
+               </a>
+             )}
+
+             {selectedEdition?.pdfUrl && (
+               <a href={selectedEdition.pdfUrl} target="_blank" rel="noreferrer" className="p-3 bg-red-600 text-white hover:bg-red-700 rounded-xl transition font-bold text-xs flex items-center gap-1 shadow-md shadow-red-200" title="Download Full PDF">
+                 <FileCode size={18} /> <span className="hidden lg:inline">PDF</span>
+               </a>
+             )}
+
+             <button onClick={handleResetZoom} className="p-3 hover:bg-red-50 hover:text-red-600 rounded-xl transition text-gray-600 bg-gray-50 border border-gray-200 hidden sm:block" title="Reset Zoom">
                <Maximize size={18} />
              </button>
           </div>
         </div>
       </header>
 
-      {/* --- Edition Context & Quick Info --- */}
-      <div className="bg-gray-900 text-white py-3 shadow-inner">
+      {/* Edition Banner */}
+      <div className="bg-gray-900 text-white py-2.5 shadow-inner">
         <div className="max-w-6xl mx-auto px-4 flex items-center justify-between">
           <div className="flex items-center gap-3 overflow-hidden">
-             <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse shrink-0"></div>
-             <p className="text-[11px] sm:text-sm font-black truncate uppercase tracking-widest text-gray-100">
+             <div className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse shrink-0"></div>
+             <p className="text-[11px] sm:text-xs font-black truncate uppercase tracking-widest text-gray-100">
                {selectedEdition?.title || "Latest Edition"} <span className="mx-2 opacity-30">|</span> {formatDate(selectedEdition?.date)}
              </p>
           </div>
           <div className="flex items-center gap-4 shrink-0 px-2 ml-2">
-             <div className="text-[10px] sm:text-xs font-black uppercase text-red-600 bg-white px-3 py-1 rounded-full shadow-lg">
-               Page {currentPageIndex + 1} / {selectedEdition?.pages.length || 0}
+             <div className="text-[10px] sm:text-xs font-black uppercase text-red-600 bg-white px-3 py-1 rounded-full shadow-md">
+               Page {currentPageIndex + 1} / {selectedEdition?.pages?.length || 0}
              </div>
           </div>
         </div>
       </div>
 
-      {/* --- Main Viewer Section --- */}
-      <main className="flex-1 overflow-hidden relative flex flex-col items-center justify-center p-2 sm:p-6 lg:p-10 bg-gray-200 custom-scrollbar-minimal">
+      {/* Main Page Viewer */}
+      <main className="flex-1 overflow-auto relative flex flex-col items-center justify-center p-2 sm:p-6 lg:p-8 bg-gray-200 custom-scrollbar-minimal min-h-[65vh]">
         
         {error ? (
-          <div className="bg-white p-10 rounded-3xl shadow-2xl text-center max-w-md border-t-8 border-red-600">
+          <div className="bg-white p-8 sm:p-12 rounded-3xl shadow-2xl text-center max-w-md border-t-8 border-red-600 my-auto">
             <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
                 <AlertCircle size={40} className="text-red-600" />
             </div>
             <h3 className="text-2xl font-black text-gray-900 mb-2">ओह! क्षमा करें</h3>
-            <p className="text-gray-500 font-bold mb-8">{error}</p>
+            <p className="text-gray-600 font-bold mb-8 text-sm">{error}</p>
             <button 
-               onClick={() => window.location.reload()} 
-               className="bg-gray-900 text-white px-10 py-4 rounded-2xl font-black hover:bg-black hover:shadow-xl transition-all active:scale-95 flex items-center gap-3 mx-auto uppercase tracking-widest text-sm"
+               onClick={() => fetchEditionDetails(today)} 
+               className="bg-gray-900 text-white px-8 py-3.5 rounded-2xl font-black hover:bg-black hover:shadow-xl transition active:scale-95 flex items-center gap-2 mx-auto uppercase tracking-wider text-xs"
             >
-              रीफ्रेश करें <ArrowRight size={18} />
+              ताज़ा ई-पेपर देखें <ArrowRight size={16} />
             </button>
           </div>
         ) : (
-          <div className="relative w-full h-full flex items-center justify-center">
-            {/* Desktop Navigation Floating Arrows */}
+          <div className="relative w-full h-full flex items-center justify-center my-auto">
+            {/* Prev Page Button */}
             <button 
               disabled={currentPageIndex === 0}
               onClick={handlePrevPage}
-              className="absolute left-0 lg:left-8 z-40 p-5 bg-white/95 hover:bg-red-600 hover:text-white text-gray-900 rounded-2xl shadow-2xl transition-all disabled:opacity-0 disabled:pointer-events-none active:scale-90 border border-gray-100 hidden sm:flex"
+              className="absolute left-2 lg:left-8 z-40 p-4 sm:p-5 bg-white/95 hover:bg-red-600 hover:text-white text-gray-900 rounded-2xl shadow-2xl transition-all disabled:opacity-0 disabled:pointer-events-none active:scale-90 border border-gray-200 hidden sm:flex"
+              title="पिछला पृष्ठ (Left Arrow)"
             >
-              <ChevronLeft size={32} strokeWidth={3} />
+              <ChevronLeft size={30} strokeWidth={3} />
             </button>
 
+            {/* Next Page Button */}
             <button 
-              disabled={currentPageIndex === selectedEdition?.pages.length - 1}
+              disabled={!selectedEdition?.pages || currentPageIndex === selectedEdition.pages.length - 1}
               onClick={handleNextPage}
-              className="absolute right-0 lg:right-8 z-40 p-5 bg-white/95 hover:bg-red-600 hover:text-white text-gray-900 rounded-2xl shadow-2xl transition-all disabled:opacity-0 disabled:pointer-events-none active:scale-90 border border-gray-100 hidden sm:flex"
+              className="absolute right-2 lg:right-8 z-40 p-4 sm:p-5 bg-white/95 hover:bg-red-600 hover:text-white text-gray-900 rounded-2xl shadow-2xl transition-all disabled:opacity-0 disabled:pointer-events-none active:scale-90 border border-gray-200 hidden sm:flex"
+              title="अगला पृष्ठ (Right Arrow)"
             >
-              <ChevronRight size={32} strokeWidth={3} />
+              <ChevronRight size={30} strokeWidth={3} />
             </button>
 
-            {/* THE PAGE VIEW */}
-            <div 
-              className={`transition-all duration-500 ease-out origin-top shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] bg-white relative overflow-hidden rounded-sm ${loading ? 'opacity-50 grayscale' : 'opacity-100 grayscale-0'}`}
-              style={{ transform: `scale(${zoomScale})` }}
-            >
-              {loading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-sm z-10">
-                   <div className="flex flex-col items-center">
-                      <div className="w-16 h-16 border-4 border-red-100 border-t-red-600 rounded-full animate-spin"></div>
-                      <span className="mt-4 text-[12px] font-black uppercase text-red-600 tracking-[0.2em] leading-none">Rendering...</span>
-                   </div>
-                </div>
-              )}
-              <img 
-                 src={currentPage?.imageUrl}
-                 alt={`Page ${currentPageIndex + 1}`}
-                 className="max-w-full h-auto cursor-zoom-in"
-                 style={{ width: 'auto', maxHeight: zoomScale > 1 ? 'none' : 'calc(100vh - 240px)' }}
-                 onLoad={() => setLoading(false)}
-                 onDoubleClick={handleResetZoom}
-              />
-            </div>
+            {/* E-PAPER PAGE DISPLAY */}
+            {currentPage?.imageUrl ? (
+              <div 
+                className={`transition-all duration-300 ease-out origin-center shadow-[0_30px_70px_-15px_rgba(0,0,0,0.35)] bg-white relative overflow-hidden rounded-md border border-gray-300 ${loading ? 'opacity-50 grayscale' : 'opacity-100'}`}
+                style={{ transform: `scale(${zoomScale})` }}
+              >
+                {loading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/70 backdrop-blur-sm z-10">
+                     <div className="flex flex-col items-center">
+                        <Loader2 className="w-12 h-12 text-red-600 animate-spin" />
+                        <span className="mt-3 text-[11px] font-black uppercase text-red-600 tracking-widest">Page Loading...</span>
+                     </div>
+                  </div>
+                )}
+                <img 
+                   src={currentPage.imageUrl}
+                   alt={`Page ${currentPageIndex + 1}`}
+                   className="max-w-full h-auto cursor-zoom-in"
+                   style={{ width: 'auto', maxHeight: zoomScale > 1 ? 'none' : 'calc(100vh - 220px)' }}
+                   onLoad={() => setLoading(false)}
+                   onDoubleClick={handleResetZoom}
+                />
+              </div>
+            ) : (
+              <div className="bg-white p-12 rounded-2xl shadow-xl text-center max-w-sm my-12">
+                <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
+                <p className="text-gray-800 font-bold text-base">इस पृष्ठ की छवि उपलब्ध नहीं है।</p>
+              </div>
+            )}
           </div>
         )}
 
-        {/* Mobile Fixed Controls Overlay */}
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-gray-950/90 backdrop-blur-xl px-6 py-4 rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.4)] sm:hidden z-50 text-white">
-          <button 
-             onClick={handlePrevPage}
-             disabled={currentPageIndex === 0}
-             className="p-1 disabled:opacity-20 text-white"
-          >
-            <ChevronLeft size={28} strokeWidth={3} />
-          </button>
-          <div className="w-px h-6 bg-white/10 mx-2"></div>
-          <span className="text-xs font-black min-w-[70px] text-center uppercase tracking-tighter">P - {currentPageIndex + 1} / {selectedEdition?.pages.length}</span>
-          <div className="w-px h-6 bg-white/10 mx-2"></div>
-          <button 
-             onClick={handleNextPage}
-             disabled={currentPageIndex === selectedEdition?.pages.length - 1}
-             className="p-1 disabled:opacity-20 text-white"
-          >
-            <ChevronRight size={28} strokeWidth={3} />
-          </button>
-        </div>
+        {/* Mobile Nav overlay */}
+        {!error && selectedEdition?.pages && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-gray-950/90 backdrop-blur-xl px-5 py-3 rounded-full border border-white/20 shadow-2xl sm:hidden z-50 text-white">
+            <button 
+               onClick={handlePrevPage}
+               disabled={currentPageIndex === 0}
+               className="p-1 disabled:opacity-20 text-white"
+            >
+              <ChevronLeft size={24} strokeWidth={3} />
+            </button>
+            <div className="w-px h-5 bg-white/20"></div>
+            <span className="text-xs font-black min-w-[80px] text-center uppercase tracking-tight">P - {currentPageIndex + 1} / {selectedEdition.pages.length}</span>
+            <div className="w-px h-5 bg-white/20"></div>
+            <button 
+               onClick={handleNextPage}
+               disabled={currentPageIndex === selectedEdition.pages.length - 1}
+               className="p-1 disabled:opacity-20 text-white"
+            >
+              <ChevronRight size={24} strokeWidth={3} />
+            </button>
+          </div>
+        )}
       </main>
 
-      {/* --- Thumbnail Overview Strip --- */}
-      {!error && selectedEdition && (
-        <div className="bg-white border-t border-gray-200 p-4 pb-8 overflow-hidden hidden sm:block">
-          <div className="max-w-screen-2xl mx-auto flex items-center gap-6 overflow-x-auto pb-4 scrollbar-hide-custom">
-            {selectedEdition?.pages.map((page, idx) => (
+      {/* Horizontal Page Thumbnails Carousel Strip */}
+      {!error && selectedEdition && selectedEdition.pages && selectedEdition.pages.length > 0 && (
+        <div className="bg-white border-t border-gray-200 py-3 px-4 overflow-hidden hidden sm:block">
+          <div className="max-w-screen-2xl mx-auto flex items-center gap-4 overflow-x-auto pb-2 scrollbar-hide-custom">
+            {selectedEdition.pages.map((page, idx) => (
               <button
-                key={page._id}
+                key={page._id || idx}
                 onClick={() => {
                   setLoading(true);
                   setCurrentPageIndex(idx);
                   setZoomScale(1);
                 }}
-                className={`flex-shrink-0 w-24 h-32 border-4 rounded-2xl overflow-hidden transition-all duration-500 transform hover:-translate-y-2 ${
+                className={`flex-shrink-0 w-20 h-28 border-3 rounded-xl overflow-hidden transition-all duration-300 relative group ${
                   currentPageIndex === idx 
-                  ? 'border-red-600 shadow-2xl shadow-red-200 scale-110' 
-                  : 'border-white hover:border-gray-200 shadow-md opacity-50 hover:opacity-100'
+                  ? 'border-red-600 shadow-xl ring-2 ring-red-500 scale-105' 
+                  : 'border-gray-200 hover:border-gray-400 opacity-60 hover:opacity-100'
                 }`}
               >
                 <img src={page.imageUrl} alt="" className="w-full h-full object-cover" />
+                <span className="absolute bottom-1 right-1 bg-black/80 text-white text-[9px] font-black px-1.5 py-0.5 rounded">
+                  {idx + 1}
+                </span>
               </button>
             ))}
           </div>

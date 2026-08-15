@@ -1,0 +1,10 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  # If requested file or directory exists, serve it directly (e.g. ads.txt, assets, images)
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  # Otherwise route to index.html for React SPA handling
+  RewriteRule . /index.html [L]
+</IfModule>
