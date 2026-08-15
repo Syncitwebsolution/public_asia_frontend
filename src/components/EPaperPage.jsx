@@ -16,7 +16,6 @@ import {
   ListFilter
 } from "lucide-react";
 import api from "../assets/api";
-import logoImg from '../assets/IMG_3084.JPG.jpeg';
 
 const EPaperPage = () => {
   const [editions, setEditions] = useState([]);
@@ -165,14 +164,9 @@ const EPaperPage = () => {
           
           <div className="flex items-center gap-2 sm:gap-6">
             <div className="flex items-center shrink-0">
-               <img
-                  src={logoImg}
-                  alt="Public Asia"
-                  style={{ height: '55px', width: 'auto' }}
-                  className="object-contain"
-                />
-              <div className="h-6 w-px bg-gray-300 mx-4 hidden sm:block"></div>
-              <span className="bg-red-600 text-white px-3 py-1 rounded-lg text-[10px] sm:text-xs font-black tracking-widest uppercase shadow-lg shadow-red-200">e-Paper</span>
+              <span className="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-black tracking-widest uppercase shadow-md shadow-red-200">
+                e-Paper
+              </span>
             </div>
 
             {/* Calendar Selector */}
